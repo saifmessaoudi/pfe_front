@@ -76,6 +76,7 @@ class PasskeyPage extends GetView<PasskeyController> {
                     ),
                   ),
 
+                const SizedBox(height: 16),
                 // Loading indicator or success icon
                 if (controller.isLoading.value)
                   const CircularProgressIndicator(color: Color(0xFFEBAC1D),),
@@ -86,6 +87,14 @@ class PasskeyPage extends GetView<PasskeyController> {
                     size: 64,
                   ),
                 const SizedBox(height: 32),
+                // Create Passkey button
+                if (!controller.isLoading.value && !controller.isSuccess.value)
+                  CustomButton(
+                    borderRadius: 30,
+                    backgroundColor: Color(0xFFEBAC1D),
+                    text: 'Créer Passkey',
+                    onPressed: (){controller.createPasskey(controller.username);},
+                  ),
 
                 // Retry button if there's an error
                 if (!controller.isLoading.value &&

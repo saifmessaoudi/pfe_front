@@ -52,6 +52,10 @@ class PasskeyController extends GetxController {
     }
 
     // create passkey
+   // createPasskey(username);
+  }
+
+  void createPasskeyWithUsername() {
     createPasskey(username);
   }
 
