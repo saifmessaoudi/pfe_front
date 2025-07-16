@@ -17,7 +17,7 @@ class EnvConfig {
       final envString = dotenv.env['ENVIRONMENT'] ?? 'dev';
       environment = _getEnvironmentFromString(envString);
 
-      apiUrl = "http://192.168.1.3:8060";
+      apiUrl =  dotenv.env['API_URL']! ;
       enableLogging = dotenv.env['ENABLE_LOGGING'] == 'true';
 
       LoggerService.d('Environment initialized: $environment');
@@ -26,7 +26,7 @@ class EnvConfig {
      // LoggerService.e('Failed to initialize environment: $e');
       // Set defaults
       environment = Environment.dev;
-      apiUrl = 'http://192.168.1.3:8060';
+      apiUrl =   'http://10.0.2.2:8090';
       enableLogging = true;
     }
   }

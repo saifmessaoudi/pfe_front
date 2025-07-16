@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:get/get.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mobile_authenticator_fido/core/utils/logger/logger.dart';
+
 import 'core/config/env/env_config.dart';
 import 'core/config/routing/app_pages.dart';
 import 'core/config/routing/app_routes.dart';
 import 'core/theme/app_theme.dart';
 import 'core/utils/manager/SessionManager.dart';
 import 'features/registration/presentation/bindings/welcome_binding.dart';
-import 'features/registration/presentation/utils/secure_storage.dart';
+import 'features/registration/presentation/utils/secure_storage_mig.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +25,7 @@ Future<void> initServices() async {
   await EnvConfig.initialize();
   await GetStorage.init();
   LoggerService.init();
-  Get.put(SecureStorageService( FlutterSecureStorage()));
+  Get.put(SecureStorageServiceMig());
 
   await SessionManager().initialize();
 }

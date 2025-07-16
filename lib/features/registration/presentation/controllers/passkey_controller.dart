@@ -1,21 +1,24 @@
+import 'dart:io';
+
 import 'package:android_id/android_id.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobile_authenticator_fido/core/config/routing/app_routes.dart';
+
 import '../../../../core/utils/logger/logger.dart';
 import '../../domain/entities/device_info.dart';
 import '../../domain/entities/passkey_request.dart';
 import '../../domain/usecases/complete_registration_usecase.dart';
 import '../utils/biometric_service.dart';
 import '../utils/crypto_service.dart';
-import '../utils/secure_storage.dart';
+import '../utils/secure_storage_mig.dart';
 
 class PasskeyController extends GetxController {
   final CompleteRegistrationUseCase _completeRegistrationUseCase;
   final CryptoService _cryptoService;
   final BiometricService _biometricService;
-  final SecureStorageService _secureStorageService = Get.find();
+  final SecureStorageServiceMig _secureStorageService = Get.find();
 
   PasskeyController({
     required CompleteRegistrationUseCase completeRegistrationUseCase,
@@ -65,7 +68,7 @@ class PasskeyController extends GetxController {
 
       final keyPair = await _cryptoService.generatePemKeyPair();
 
-      _secureStorageService.writeUsername(username);
+      await _secureStorageService.writeUsername(username);
 
       final biometricSuccess = await _biometricService.writePrivateKey(
         username,
@@ -73,7 +76,12 @@ class PasskeyController extends GetxController {
       );
       if (!biometricSuccess) {
         errorMessage.value = 'Échec de l\'enregistrement de la clé privée.';
+        LoggerService.d('Échec de l\'enregistrement de la clé privée. == true');
+
         return;
+      } else {
+        LoggerService.d('Échec de l\'enregistrement de la clé privée. == False');
+
       }
 
       final signedChallenge = _cryptoService.signWithPem(
@@ -114,7 +122,6 @@ class PasskeyController extends GetxController {
       } else {
         errorMessage.value = response.message!;
       }
-
     } on Exception catch (e) {
       if (e.toString() == 'Exception: SECURE_LOCK_SCREEN_REQUIRED') {
         LoggerService.e('Secure lock screen required: $e');
@@ -151,6 +158,13 @@ class PasskeyController extends GetxController {
 
 // Collect device information
 Future<DeviceInfoModel> collectDeviceInfo() async {
+  if (Platform.isIOS) {
+    return DeviceInfoModel(
+      deviceUUID: "1234",
+      deviceName: "Iphone",
+      deviceModel: "Iphone X",
+    );
+  }
   final deviceInfoPlugin = DeviceInfoPlugin();
   final androidPlugin = AndroidId();
 

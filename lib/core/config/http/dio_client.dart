@@ -19,6 +19,9 @@ class DioClient {
         headers: {
           ApiConstants.contentType: ApiConstants.applicationJson,
         },
+        validateStatus: (status){
+          return status! < 500; // This will allow 4xx errors to pass through
+        }
       ),
     );
 

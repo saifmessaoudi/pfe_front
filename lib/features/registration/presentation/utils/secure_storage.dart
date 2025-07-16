@@ -1,4 +1,5 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+/*
+import 'package:flutter_securepref/flutter_secure_storage.dart';
 
 class SecureStorageService {
   final FlutterSecureStorage _storage;
@@ -62,4 +63,4 @@ class SecureStorageService {
   Future<void> removeIsAuthenticated() async {
     await _storage.delete(key: 'is_authenticated');
   }
-}
+}*/

@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
 
-import '../../../features/registration/presentation/utils/secure_storage.dart';
-import 'package:flutter/services.dart';
+import '../../../features/registration/presentation/utils/secure_storage_mig.dart';
 
 class SessionManager {
   // Singleton instance
@@ -20,7 +19,7 @@ class SessionManager {
   String? accessToken;
 
   // SecureStorageService to handle storage
-  final SecureStorageService _secureStorageService = Get.find();
+  final SecureStorageServiceMig _secureStorageService = Get.find();
 
   // Initialize the session (check if a token exists and if it's valid)
   Future<void> initialize() async {

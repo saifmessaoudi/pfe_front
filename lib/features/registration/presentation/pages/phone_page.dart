@@ -153,16 +153,15 @@ class PhoneScreen extends GetView<PhoneController> {
                                 : controller.sendSms,
                       );
                     }),
-                    // Add this to your PhoneScreen widget, below the phone input field
+                    const SizedBox(height: 20),
                     Obx(() {
                       if (controller.errorMessage.value.isNotEmpty) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 16.0),
+                        return Center(
                           child: Text(
                             controller.errorMessage.value,
                             style: const TextStyle(
                               color: Colors.red,
-                              fontSize: 14,
+                              fontSize: 12,
                             ),
                           ),
                         );

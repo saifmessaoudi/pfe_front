@@ -1,45 +1,32 @@
 import 'package:biometric_storage/biometric_storage.dart';
-import 'package:local_auth/local_auth.dart';
 import 'package:mobile_authenticator_fido/core/utils/logger/logger.dart';
 
-import 'local_auth_service.dart';
 
 class BiometricService {
-
-  final localAuthService = LocalAuthService();
-
 
   Future<bool> canAuthenticate() async {
     final response = await BiometricStorage().canAuthenticate();
     return response == CanAuthenticateResponse.success;
   }
 
-  Future<List<BiometricType>> isBiometricAvailable() async {
-    return localAuthService.getAvailableBiometrics();
-  }
-
-
 
   Future<BiometricStorageFile?> getBiometricFile(String username) async {
+    LoggerService.d('Attempting to get biometric file for username: $username');
     final canAuth = await canAuthenticate();
     if (!canAuth) return null;
-    LoggerService.d(await localAuthService.getAvailableBiometrics());
-    final method = await localAuthService.getPreferredBiometricMethod();
-    final title = switch (method) {
-      'face' => 'Utilisez la reconnaissance faciale',
-      'fingerprint' => 'Utilisez votre empreinte digitale',
-      'iris' => 'Utilisez la reconnaissance d’iris',
-      _ => 'Authentification biométrique',
-    };
 
     return BiometricStorage().getStorage(
       promptInfo: PromptInfo(
         androidPromptInfo: AndroidPromptInfo(
-          title: title,
+          title:  'Vérification d\'identité',
           subtitle: 'Vérification d\'identité requise',
           negativeButton: 'Annuler',
-          confirmationRequired: false
+           confirmationRequired: true,
         ),
+        iosPromptInfo: IosPromptInfo(
+          saveTitle: "Save title",
+          accessTitle: "Access title",
+        )
       ),
       'passkey_private_$username',
       options: StorageFileInitOptions(
@@ -53,13 +40,10 @@ class BiometricService {
     LoggerService.d('Writing private key for username: $username');
     try {
       final file = await getBiometricFile(username);
-      if (file == null) {
-        LoggerService.e('❌ Biometric file is null');
-        return false;
-      }
+      if (file == null) return false;
 
       await file.write(privateKeyPem);
-      //await saveUsername(username);
+      LoggerService.d('✅ Private key written successfully');
       return true;
     } catch (e,stack) {
       LoggerService.e('❌ Exception while writing private key: $e\n$stack');

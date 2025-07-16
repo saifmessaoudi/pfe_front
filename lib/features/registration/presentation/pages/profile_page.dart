@@ -32,70 +32,74 @@ class ProfileScreen extends GetView<HomeController> {
                   return const Center(child: CircularProgressIndicator(color: Color(0xFFEBAC1D)));
                 }
 
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Profile Picture and Name
-                    const CircleAvatar(
-                      radius: 45,
-                      backgroundColor: Color(0xFFEBAC1D),
-                      child: Icon(Icons.person, size: 40, color: Colors.white),
-                    ),
-                    const SizedBox(height: 20),
-                    Text(
-                      profile.preferredUsername ?? 'No username',
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blueGrey,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      profile.emailVerified
-                          ? 'Utilisateur vérifié via biométrie'
-                          : 'Utilisateur non vérifié',
-                      style: const TextStyle(fontSize: 16, color: Colors.blueGrey),
-                    ),
-                    const SizedBox(height: 30),
-                    const Divider(color: Colors.blueGrey, thickness: 1),
+                return Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Profile Picture and Name
+                        const CircleAvatar(
+                          radius: 45,
+                          backgroundColor: Color(0xFFEBAC1D),
+                          child: Icon(Icons.person, size: 40, color: Colors.white),
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          profile.preferredUsername ?? 'No username',
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blueGrey,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          profile.emailVerified
+                              ? 'Utilisateur vérifié via biométrie'
+                              : 'Utilisateur non vérifié',
+                          style: const TextStyle(fontSize: 16, color: Colors.blueGrey),
+                        ),
+                        const SizedBox(height: 30),
+                        const Divider(color: Colors.blueGrey, thickness: 1),
 
-                    // User Profile Options
-                    _buildProfileOption(Icons.account_box, 'User Profile', () {}),
-                    _buildProfileOption(Icons.lock, 'Change Password', () {}),
-                    _buildProfileOption(Icons.question_answer, 'FAQs', () {}),
-                    _buildNotificationOption(),
+                        // User Profile Options
+                        _buildProfileOption(Icons.account_box, 'User Profile', () {}),
+                        _buildProfileOption(Icons.lock, 'Change Password', () {}),
+                        _buildProfileOption(Icons.question_answer, 'FAQs', () {}),
+                        _buildNotificationOption(),
 
-                    const SizedBox(height: 30),
-                    // Credentials Section
-                    Text(
-                      'Vos PassKeys',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blueGrey,
-                      ),
+                        const SizedBox(height: 30),
+                        // Credentials Section
+                        Text(
+                          'Vos PassKeys',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blueGrey,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+
+                        // Display Credentials
+                        ...profile.credentials.map((cred) => ListTile(
+                          title: Text('Device: ${cred.deviceName ?? "N/A"}', style: const TextStyle(color: Colors.blueGrey)),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Device Model: ${cred.deviceModel ?? "N/A"}', style: const TextStyle(color: Colors.blueGrey)),
+                              Text('Created: ${DateTime.fromMillisecondsSinceEpoch(cred.createdDate).toLocal().toString().split(' ')[0]}',
+                                  style: const TextStyle(color: Colors.blueGrey)),
+                            ],
+                          ),
+                          trailing: const Icon(Icons.arrow_forward, color: Colors.blueGrey),
+                        )),
+                        const SizedBox(height: 20),
+                        // Logout Button
+                        _buildLogoutOption(),
+
+                      ],
                     ),
-                    const SizedBox(height: 10),
-
-                    // Display Credentials
-                    ...profile.credentials.map((cred) => ListTile(
-                      title: Text('Device: ${cred.deviceName ?? "N/A"}', style: const TextStyle(color: Colors.blueGrey)),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Device Model: ${cred.deviceModel ?? "N/A"}', style: const TextStyle(color: Colors.blueGrey)),
-                          Text('Created: ${DateTime.fromMillisecondsSinceEpoch(cred.createdDate).toLocal().toString().split(' ')[0]}',
-                              style: const TextStyle(color: Colors.blueGrey)),
-                        ],
-                      ),
-                      trailing: const Icon(Icons.arrow_forward, color: Colors.blueGrey),
-                    )),
-                    const SizedBox(height: 20),
-                    // Logout Button
-                    _buildLogoutOption(),
-
-                  ],
+                  ),
                 );
               }),
             ),

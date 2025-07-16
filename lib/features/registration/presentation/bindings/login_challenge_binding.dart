@@ -1,4 +1,3 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:mobile_authenticator_fido/core/utils/exception/ErrorHandler.dart';
 import 'package:mobile_authenticator_fido/features/registration/data/ds/login_remote_ds.dart';
@@ -10,54 +9,43 @@ import 'package:mobile_authenticator_fido/features/registration/presentation/con
 
 import '../utils/biometric_service.dart';
 import '../utils/crypto_service.dart';
-import '../utils/secure_storage.dart';
-
-
+import '../utils/secure_storage_mig.dart';
 
 class LoginChallengeBinding extends Bindings {
   @override
   void dependencies() {
     // Make sure data sources and repositories are registered
     if (!Get.isRegistered<LoginRemoteDataSource>()) {
-      Get.lazyPut<LoginRemoteDataSource>(
-            () => LoginRemoteDataSourceImpl(),
-      );
+      Get.lazyPut<LoginRemoteDataSource>(() => LoginRemoteDataSourceImpl());
     }
 
     if (!Get.isRegistered<LoginRepository>()) {
-      Get.lazyPut<LoginRepository>(
-            () => LoginRepositoryImpl(),
-      );
+      Get.lazyPut<LoginRepository>(() => LoginRepositoryImpl());
     }
 
     // Use cases
     Get.lazyPut(
-          () => InitiateLoginChallengeUseCase(Get.find<LoginRepository>()),
+      () => InitiateLoginChallengeUseCase(Get.find<LoginRepository>()),
     );
     Get.lazyPut(
-          () => CompleteLoginChallengeUseCase(Get.find<LoginRepository>()),
+      () => CompleteLoginChallengeUseCase(Get.find<LoginRepository>()),
     );
 
-    Get.lazyPut(
-          () => CryptoService(),
+    Get.lazyPut(() => CryptoService());
+
+    Get.lazyPut(() => ErrorHandlerService());
+
+    Get.lazyPut(() => BiometricService());
+    //Get.lazyPut(() => SecureStorageService(const FlutterSecureStorage()));
+    Get.lazyPut(() => SecureStorageServiceMig());
+
+    Get.lazyPut<LoginChallengeController>(
+      () => LoginChallengeController(
+        initiateUseCase: Get.find(),
+        completeUseCase: Get.find(),
+        cryptoService: Get.find(),
+        biometricService: Get.find(),
+      ),
     );
-
-    Get.lazyPut(
-          () => ErrorHandlerService(),
-    );
-
-    Get.lazyPut(
-          () => BiometricService(),
-    );
-    Get.lazyPut(() => SecureStorageService(const FlutterSecureStorage()));
-
-
-    Get.lazyPut<LoginChallengeController>(() => LoginChallengeController(
-      initiateUseCase: Get.find(),
-      completeUseCase: Get.find(),
-      cryptoService: Get.find(),
-      biometricService: Get.find(),
-    ));
-
   }
 }

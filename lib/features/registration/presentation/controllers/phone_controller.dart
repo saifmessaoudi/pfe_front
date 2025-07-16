@@ -60,22 +60,36 @@ class PhoneController extends GetxController {
     errorMessage.value = '';
 
     try {
-      final smsEntity = SmsEntity(phoneNumber: cleanedPhoneNumber);
-      final success = await sendSmsUseCase.execute(smsEntity);
+      final success = await sendSmsUseCase.execute(SmsEntity(phoneNumber: cleanedPhoneNumber));
 
       if (success) {
         Get.toNamed(AppRoutes.OTP, arguments: {'phoneNumber': phoneNumber.value});
       }
     } on ApiException catch (e) {
-      if (e.statusCode == 409) {
-        errorMessage.value = 'Ce numéro est déjà enregistré. Veuillez vous connecter.';
-      } else {
-        errorMessage.value = 'Échec de l\'envoi du SMS. Veuillez réessayer.';
+      LoggerService.e('API Error - Status: ${e.statusCode} | Message: ${e.message} | Data: ${e.data}');
+      // Handle specific status codes
+      switch (e.statusCode) {
+        case 409:
+          errorMessage.value = 'Ce numéro est déjà enregistré. Veuillez vous connecter.';
+          Get.toNamed(
+            '/login-challenge',
+            arguments: {
+              'username': cleanedPhoneNumber,
+              'isExistingUser': true,
+            } );
+          break;
+        case 400:
+          errorMessage.value = 'Requête invalide. Veuillez vérifier les données.';
+          break;
+        case 500:
+          errorMessage.value = 'Erreur serveur. Veuillez réessayer plus tard.';
+          break;
+        default:
+          errorMessage.value = e.message ?? 'Échec de l\'envoi du SMS. Veuillez réessayer.';
       }
-      LoggerService.e('Error sending SMS: ${e.message}');
     } catch (e) {
+      LoggerService.e('Unexpected Error: $e');
       errorMessage.value = 'Une erreur inattendue est survenue.';
-      LoggerService.e('Unexpected error: $e');
     } finally {
       isLoading.value = false;
     }
